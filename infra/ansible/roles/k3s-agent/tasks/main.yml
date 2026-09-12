@@ -1,0 +1,20 @@
+---
+- name: Download K3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/install-k3s.sh
+    mode: "0755"
+
+- name: Install K3s agent
+  ansible.builtin.command:
+    cmd: >
+      /tmp/install-k3s.sh agent
+      --server https://{{ hostvars['control-plane']['k3s_server_ip'] }}:6443
+      --token {{ hostvars['control-plane']['k3s_join_token'] }}
+    creates: /usr/local/bin/k3s
+
+- name: Wait for K3s agent service
+  ansible.builtin.service:
+    name: k3s-agent
+    state: started
+    enabled: true

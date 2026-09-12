@@ -1,0 +1,18 @@
+---
+- name: Base hardening
+  hosts: k3s_cluster
+  become: true
+  roles:
+    - base-hardening
+
+- name: Install K3s server
+  hosts: control_plane
+  become: true
+  roles:
+    - k3s-server
+
+- name: Install K3s agents
+  hosts: workers
+  become: true
+  roles:
+    - k3s-agent

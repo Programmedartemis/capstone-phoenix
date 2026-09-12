@@ -1,0 +1,32 @@
+---
+- name: Download K3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/install-k3s.sh
+    mode: "0755"
+
+- name: Install K3s server
+  ansible.builtin.command:
+    cmd: /tmp/install-k3s.sh server
+    creates: /usr/local/bin/k3s
+
+- name: Wait for K3s service
+  ansible.builtin.service:
+    name: k3s
+    state: started
+    enabled: true
+
+- name: Wait for K3s API server
+  ansible.builtin.wait_for:
+    port: 6443
+    host: "127.0.0.1"
+    timeout: 120
+
+- name: Read K3s node token
+  ansible.builtin.slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: k3s_token
+
+- name: Store K3s token for worker nodes
+  ansible.builtin.set_fact:
+    k3s_join_token: "{{ k3s_token.content | b64decode | trim }}"
