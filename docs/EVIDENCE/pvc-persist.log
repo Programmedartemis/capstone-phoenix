@@ -1,0 +1,24 @@
+=== PVC PERSISTENCE TEST ===
+
+Before Pod deletion:
+postgres-0: 1/1 Running
+Pod IP: 10.42.2.14
+Node: ip-172-31-1-215
+
+Database marker before deletion:
+1 | phoenix-pvc-test
+
+Action:
+Deleted postgres-0 Pod.
+
+After Pod recreation:
+postgres-0: 1/1 Running
+Pod IP: 10.42.2.17
+Node: ip-172-31-1-215
+
+Database marker after recreation:
+1 | phoenix-pvc-test
+
+Result:
+The PostgreSQL Pod was deleted and recreated with a new Pod IP,
+while the database record remained intact, proving PVC persistence.
